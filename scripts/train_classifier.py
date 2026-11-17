@@ -17,6 +17,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
+if not (SRC / "lib").is_dir():
+    # Dentro del contenedor del backend: src/ esta montado en /app (WORKDIR) y scripts/ en /scripts.
+    ROOT = SRC = Path.cwd()
 sys.path.insert(0, str(SRC))
 
 # Usa la misma configuracion que el backend local (src/.env, con paths relativos a src/).

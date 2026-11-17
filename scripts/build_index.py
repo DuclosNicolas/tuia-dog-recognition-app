@@ -7,6 +7,9 @@ Si USE_PGVECTOR=true, la base de datos debe estar corriendo
 
 Uso:
     python scripts/build_index.py [--split train] [--limit 0]
+
+Dentro de Docker (con `docker compose up -d` corriendo):
+    docker compose exec backend python /scripts/build_index.py [--split train]
 """
 from __future__ import annotations
 
@@ -17,6 +20,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
+if not (SRC / "lib").is_dir():
+    # Dentro del contenedor del backend: src/ esta montado en /app (WORKDIR) y scripts/ en /scripts.
+    ROOT = SRC = Path.cwd()
 sys.path.insert(0, str(SRC))
 
 # Usa la misma configuracion que el backend local (src/.env, con paths relativos a src/).

@@ -71,6 +71,7 @@ def build_similarity(
         image_size=settings.image_size,
         model_name=settings.embedding_model,
         url_resolver=url_resolver,
+        data_root=settings.data_path,
     )
 
 
