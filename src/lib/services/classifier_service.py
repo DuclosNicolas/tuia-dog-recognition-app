@@ -87,11 +87,11 @@ class ClassifierService:
         """
         Entrena el clasificador de razas sobre el dataset (self.dataset_path).
 
-        Modelo A (obligatorio): fine-tuning de ResNet18 pre-entrenado.
-        Modelo B (opcional, recomendado): CNN propia.
+        Modelo A (obligatorio): fine-tuning de ResNet18 (o ResNet50) pre-entrenado.
+        Modelo B (obligatorio): CNN propia.
 
         Debe:
-          - Usar los splits train/valid definidos en la notebook.
+          - Usar los splits train/valid definidos en 1-pre-processing.ipynb.
           - Aplicar el preprocesamiento y data augmentation justificados.
           - Guardar el checkpoint resultante en self.active_checkpoint
             (ej: models/resnet18_finetuned.pth).
@@ -104,7 +104,7 @@ class ClassifierService:
 
         Debe reportar: accuracy, precision, recall (sensibilidad),
         specificity (especificidad) y F1-Score. La matriz de confusion y las
-        curvas de entrenamiento se documentan en la notebook.
+        curvas de entrenamiento se documentan en 2-train.ipynb.
 
         Retorna un dict con las metricas, ej:
           {"accuracy": 0.91, "precision": 0.90, "recall": 0.89,
