@@ -471,7 +471,7 @@ El flujo esperado, ya orquestado por `DetectionService.predict`, es:
   - Usen un modelo **YOLO preentrenado en COCO** (por ejemplo, YOLOv8n o YOLO11n vía `ultralytics`). **No es necesario entrenar el detector.**
   - `self.yolo_model_name`, `self.conf_threshold` y `self.dog_class_id` (clase `dog` = 16 en COCO) vienen del `.env`: filtren por esa clase y por confianza sin hardcodear valores.
   - Carguen el detector **una sola vez**, no en cada llamada.
-  - `ultralytics` descarga los pesos en el primer uso. Para no depender de internet, pueden guardar el `.pt` en `models/` y apuntar `YOLO_MODEL` a esa ruta.
+  - `ultralytics` descarga los pesos en el primer uso, en la ruta de `YOLO_MODEL` (por defecto `models/yolov8n.pt`, que persiste fuera del contenedor). Si cambian de modelo, mantengan la ruta dentro de `models/`.
 
 #### `classify_detected_dog(self, crop) -> tuple[str, float]`
 
@@ -510,11 +510,13 @@ Muestren el efecto de 2 o 3 valores de `YOLO_CONF_THRESHOLD` y justifiquen el el
 | `SIMILARITY_METRIC` / `SIMILARITY_THRESHOLD` | Métrica (`cosine` o `l2`) y umbral de similitud (Etapa 1) |
 | `TOP_K` | Cantidad de vecinos a recuperar |
 | `MODEL_PATH`, `RESNET18_MODEL_NAME`, `CNN_CUSTOM_MODEL_NAME` | Ubicación de los checkpoints (Etapa 2) |
+| `TORCH_HOME` | Caché de los pesos preentrenados de torchvision (`models/torch`) |
 | `YOLO_MODEL`, `YOLO_CONF_THRESHOLD`, `YOLO_DOG_CLASS_ID` | Configuración de YOLO (Etapa 3) |
 | `USE_PGVECTOR` y `POSTGRES_*` | Base vectorial |
 | `DATASET_PATH`, `EMBEDDINGS_PATH`, `OUTPUT_PATH` | Paths |
 
 - Actualicen `.env.docker.example` y `.env.local.example` con los valores elegidos (por ejemplo, el umbral calibrado).
+- Si agregan una variable al `.env`, declárenla también en `Settings` (`src/lib/config.py`) para leerla desde el código; las variables no declaradas se ignoran.
 - Si cambian `EMBEDDING_DIM` y ya existía la tabla, el *store* la recrea (y **borra** los registros previos): hay que reindexar.
 - La base vectorial guarda los embeddings de **un modelo a la vez**. El selector de modelo de la pestaña de la Etapa 1 (campo `model` de `/search`) cambia el extractor de la consulta, así que la base debe estar indexada con ese mismo modelo y su dimensión: ajusten `EMBEDDING_MODEL` y `EMBEDDING_DIM` y reindexen con `scripts/build_index.py`. Documenten con qué modelo queda indexada la base entregada.
 - Si agregan dependencias, agréguenlas a `requirements.txt` con versión fija y reconstruyan la imagen (`docker compose build`).
