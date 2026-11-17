@@ -6,6 +6,7 @@ import mimetypes
 from pathlib import Path
 from uuid import uuid4
 
+import numpy as np
 from fastapi import APIRouter, File, HTTPException, Response, UploadFile, status
 from fastapi.responses import FileResponse
 
@@ -57,8 +58,18 @@ def _embedding_extractor(model_name: str):
         )
     if model_name == "baseline":
         return similarity_service.extract_embedding
-    classifier_service.set_active_model(model_name)
-    return classifier_service.extract_custom_embedding
+
+    def _extract(image: np.ndarray) -> list[float]:
+        # El modelo elegido vale solo para esta consulta: se restaura el activo para que
+        # /detect siga usando el modelo configurado.
+        previous = classifier_service.active_model_name
+        classifier_service.set_active_model(model_name)
+        try:
+            return classifier_service.extract_custom_embedding(image)
+        finally:
+            classifier_service.set_active_model(previous)
+
+    return _extract
 
 
 def _urls_for_status(link: str) -> tuple[str | None, str | None]:

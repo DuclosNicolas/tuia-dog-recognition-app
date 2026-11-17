@@ -13,7 +13,9 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+    # extra="ignore": el .env puede tener variables que Settings no declara (ej. TORCH_HOME,
+    # que lee torch). Para usar una variable nueva desde el codigo, declararla aca.
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
     cors_origins: str = Field(
         default="*",

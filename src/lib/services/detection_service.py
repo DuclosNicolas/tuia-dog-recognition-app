@@ -100,9 +100,15 @@ class DetectionService:
         Escribe el resultado como JSON en `output_path` y retorna su ruta.
         """
         image = self._load_image(source_path)
+        # El modelo elegido vale solo para esta clasificacion: se restaura el activo para
+        # que /detect siga usando el modelo configurado.
+        previous = self.classifier.active_model_name
         if model_name:
             self.classifier.set_active_model(model_name)
-        breed, score = self.classify_detected_dog(image)
+        try:
+            breed, score = self.classify_detected_dog(image)
+        finally:
+            self.classifier.set_active_model(previous)
         payload = ClassifyResult(
             source_path=source_path,
             model=model_name or self.classifier.active_model_name,
