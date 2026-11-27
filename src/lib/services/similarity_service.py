@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 class SimilarityService:
     """Etapa 1: buscador de imagenes por similitud.
 
-    Funciones a implementar por el estudiante:
+    Funciones implementadas:
       - extract_embedding(image)
       - search_similar_images(embedding, top_k)
       - predict_breed_from_neighbors(results)
